@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <title>DLR_School_Lab - AstroBiologie</title>
+
+    <!-- icon für den Tab, Ansicht im Browser -->
+    <link rel="icon" href="img/DLR_Logo.png" type="image/icon type">
+
+    <!-- DLR Logo einfügen -->
+    <!--<img src="img/DLR_Logo_inverted.png" height="100" width="200" aligh="right"> -->
+    <!--             background:url(img/DLR_Logo_inverted2.png) no-repeat right top; -->
+
+    <style>
+        body,
+        html {
+            margin: 0px;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+            color: antiquewhite;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-left: 10px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        @media (orientation:landscape) {
+            .cell {
+                max-height: 25vh;
+                max-width: 15vw;
+            }
+        }
+
+        @media (orientation:portrait) {
+            .cell {
+                max-height: 15vh;
+                max-width: 25vw;
+            }
+        }
+
+        .cell {
+            display: inline-block;
+            border: 3px solid #890265;
+            margin: 1px;
+        }
+
+        td {
+            text-align: center;
+        }
+    </style>
+    <script>
+        /*            <td id='attempts' style="text-align:right">
+                &nbsp;
+            </td>
+
+            <td>
+                <div id='tip' style="text-align:left">&nbsp;</div>
+                <div id='attempts' style="text-align:right">&nbsp;</div>
+            </td>
+            */
+
+        // angeklickte Spezies und Biotop
+        var s = 0,
+            b = 0;
+        // Zuordnung von Art- und Lebensraumbildnummern
+        var loesung = {
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 5,
+            6: 6,
+            7: 7,
+            8: 8,
+            9: 9
+        };
+
+        // Zähle die Versuche
+        var versuch = 0;
+
+        // Spiel beendet wenn alle 9 erraten
+        var erraten = 0;
+
+        // Text für den Maus-Tooltip
+        var artenTexte = ["", "Echte Aloe", "Ananas", "Antarktische Schmiele", "Dänisches Löffelkraut",
+            "Eukalyptus", "Pilea", "Schwarze Mangrove", "Schwarz-Erle", "Yareta"
+        ];
+        var raumTexte = ["", "Extreme Hitze", "Extreme Trockenheit", "Extreme Kälte", "Versiegelung", "Hitze - Waldbrand", "Extreme Dunkelheit", "Hohe Salinität", "Sehr viel Regen", "Extreme Höhe"];
+
+        // Zuordnung von Anzeigeelement- und Bild-ID wird zufällig generiert
+        var arten = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        var raeume = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        // Farbcodes für die gefundenen Pärchen, Index 0 ist leer (es gibt kein Bild 0)
+        //var colors = ["", "#f00", "#ff0", "#f70", "#0ff", "#00f", "#f0f", "#f77", "#7ff"];
+        var colors = ["", "#1B9554", "#B41015", "#D9FB9F", "lime", "antiquewhite", "#890265"]; // -, dunkelgrün, dunkelrot, helles lime, lime, weiß, lila
+
+        // Liefert die Nummer Anzeigeelements für ein Bild
+        function elementFor(id, array) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] == id) return (i + 1);
+            }
+            return -1;
+        }
+
+        // The magic: Was passiert beim Anklicken
+        function select(source) {
+            var imagename = source.src.substr(source.src.lastIndexOf("/") + 1);
+            var imageid = imagename.substring(1, imagename.lastIndexOf("."));
+            var type = source.id.substring(0, 1);
+            var elementid = source.id.substring(1);
+
+            if (type == 's' && !b) {
+                if (s > 0) {
+                    document.getElementById("s" + elementFor(s, arten)).style.border = "3px solid " + colors[6];
+                }
+                s = imageid;
+                document.getElementById("s" + elementFor(imageid, arten)).style.border = "3px solid " + colors[4];
+            }
+
+            if (type == 'b' && s) {
+                source.style.border = "3px solid lime";
+                b = imageid;
+
+                setTimeout(() => {
+                    if (loesung[s] == b) {
+                        document.getElementById('messages').innerHTML = "Das ist richtig!";
+                        ++erraten;
+                        var element = document.getElementById("s" + elementFor(s, arten));
+                        element.style.border = "3px solid " + colors[1];
+                        element.removeAttribute("onclick");
+                        element = document.getElementById("b" + elementFor(b, raeume));
+                        element.style.border = "3px solid " + colors[1];
+                        element.removeAttribute("onclick");
+                    } else {
+                        document.getElementById("s" + elementFor(s, arten)).style.border = "3px solid " + colors[2];
+                        document.getElementById("b" + elementFor(b, raeume)).style.border = "3px solid " + colors[2];
+                        document.getElementById('messages').innerHTML = "Schade, die beiden passen nicht zusammen...";
+                    }
+                    ++versuch;
+                }, 250);
+
+                setTimeout(() => {
+                    if (loesung[s] != b) {
+                        document.getElementById("s" + elementFor(s, arten)).style.border = "3px solid " + colors[6];
+                        document.getElementById("b" + elementFor(b, raeume)).style.border = "3px solid " + colors[6];
+                    }
+                    s = b = 0;
+                    // &nbsp verhindert automatischen Zeilenumbruch bei Leerzeichen ("geschütztes Leerzeichen")
+                    if (erraten == 9) {
+                        document.getElementById("messages").innerHTML = "Glückwunsch! Du hast das Spiel geschafft.";
+                    } else {
+                        document.getElementById("messages").innerHTML = "&nbsp;";
+                    }
+                    document.getElementById("attempts").innerHTML = "Deine Versuche: " + versuch;
+                }, 1500);
+            }
+        }
+
+        // Nimmt ein Array und liefert es verwürfelt zurück
+        function shuffle(unshuffled) {
+            let shuffled = unshuffled
+                .map((a) => ({
+                    sort: Math.random(),
+                    value: a
+                }))
+                .sort((a, b) => a.sort - b.sort)
+                .map((a) => a.value)
+            return shuffled;
+        }
+
+        // Bilder in die Anzeigeelemente stecken
+        // Die Bilder liegen im Unterordner img und heißen s1.png bis s9.png bzw. b1.png bis b9.png
+        window.onload = function() {
+            for (var i = 1; i < 10; i++) {
+                document.getElementById("s" + i).src = "./img/s" + arten[i - 1] + ".png";
+                document.getElementById("s" + i).title = artenTexte[arten[i - 1]];
+                document.getElementById("b" + i).src = "./img/b" + raeume[i - 1] + ".png";
+                document.getElementById("b" + i).title = raumTexte[raeume[i - 1]];
+            }
+            // Versuchsanzahl und Hinweis von Anfang an anzeigen.
+            document.getElementById("attempts").innerHTML = "Deine Versuche: " + versuch;
+            document.getElementById("tip").innerHTML = "Um mehr über die Pflanze oder den Lebensraum zu erfahren<br> verweile kurz mit dem Mauszeiger auf dem Bild.";
+        }
+    </script>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td>
+                <h2>Ordne die Planzenarten ihrem Lebensraum zu!</h2>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class='container' id='species'>
+
+                    <div class='row'>
+                        <img class='cell' id='s1' onclick='select(this);'>
+                        <img class='cell' id='s2' onclick='select(this);'>
+                        <img class='cell' id='s3' onclick='select(this);'>
+                    </div>
+                    <div class='row'>
+                        <img class='cell' id='s4' onclick='select(this);'>
+                        <img class='cell' id='s5' onclick='select(this);'>
+                        <img class='cell' id='s6' onclick='select(this);'>
+                    </div>
+                    <div class='row'>
+                        <img class='cell' id='s7' onclick='select(this);'>
+                        <img class='cell' id='s8' onclick='select(this);'>
+                        <img class='cell' id='s9' onclick='select(this);'>
+                    </div>
+                </div>
+
+                <div class='container' id='biotope'>
+                    <div class='row'>
+                        <img class='cell' id='b1' onclick='select(this);'>
+                        <img class='cell' id='b2' onclick='select(this);'>
+                        <img class='cell' id='b3' onclick='select(this);'>
+                    </div>
+                    <div class='row'>
+                        <img class='cell' id='b4' onclick='select(this);'>
+                        <img class='cell' id='b5' onclick='select(this);'>
+                        <img class='cell' id='b6' onclick='select(this);'>
+                    </div>
+                    <div class='row'>
+                        <img class='cell' id='b7' onclick='select(this);'>
+                        <img class='cell' id='b8' onclick='select(this);'>
+                        <img class='cell' id='b9' onclick='select(this);'>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td id='messages'>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+
+                <div>
+                    <p id='attempts' style='float: right'>
+                        &nbsp;
+                    </p>
+                    <p id='tip' style='float: left'>
+                        &nbsp;
+                    </p>
+                </div>
+            </td>
+        </tr>
+    </table>
+    </div>
+</body>
+
+</html>
