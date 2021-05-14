@@ -33,6 +33,7 @@
             display: inline-block;
         }
 
+
         @media (orientation:landscape) {
             .cell {
                 max-height: 25vh;
@@ -55,6 +56,12 @@
 
         td {
             text-align: center;
+        }
+        
+        hr {
+        height: 500px;
+        width: 1px;
+        display: inline-block;
         }
     </style>
     <script>
@@ -202,7 +209,7 @@
         </tr>
         <tr>
             <td>
-                <div class='container' id='species'>
+                <div class='container' id='id_species'>
 
                     <div class='row'>
                         <img class='cell' id='s1' onclick='select(this);'>
@@ -220,8 +227,9 @@
                         <img class='cell' id='s9' onclick='select(this);'>
                     </div>
                 </div>
+                <hr>
 
-                <div class='container' id='biotope'>
+                <div class='container' id='id_biotope'>
                     <div class='row'>
                         <img class='cell' id='b1' onclick='select(this);'>
                         <img class='cell' id='b2' onclick='select(this);'>
