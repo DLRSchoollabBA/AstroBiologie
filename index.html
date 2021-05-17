@@ -59,7 +59,7 @@
         }
 
         hr {
-        height: 500px;
+        height: 400px;
         width: 1px;
         display: inline-block;
         }
@@ -133,7 +133,7 @@
                 document.getElementById("s" + elementFor(imageid, arten)).style.border = "3px solid " + colors[4];
             }
 
-            if (type == 'b' && s) {
+            if (type == 'b' && s && !b) {
                 source.style.border = "3px solid lime";
                 b = imageid;
 
