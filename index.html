@@ -108,7 +108,8 @@
         var raeume = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         // Farbcodes für die gefundenen Pärchen, Index 0 ist leer (es gibt kein Bild 0)
         //var colors = ["", "#f00", "#ff0", "#f70", "#0ff", "#00f", "#f0f", "#f77", "#7ff"];
-        var colors = ["", "#1B9554", "#B41015", "#D9FB9F", "lime", "antiquewhite", "#890265"]; // -, dunkelgrün, dunkelrot, helles lime, lime, weiß, lila
+        // [-, dunkelgrün, dunkelrot, helles lime, lime, weiß, lila]
+        var colors = ["", "#1B9554", "#B41015", "#D9FB9F", "lime", "antiquewhite", "#890265"];
 
         // Liefert die Nummer Anzeigeelements für ein Bild
         function elementFor(id, array) {
@@ -131,6 +132,9 @@
                 }
                 s = imageid;
                 document.getElementById("s" + elementFor(imageid, arten)).style.border = "3px solid " + colors[4];
+
+
+
             }
 
             if (type == 'b' && s && !b) {
@@ -144,9 +148,14 @@
                         var element = document.getElementById("s" + elementFor(s, arten));
                         element.style.border = "3px solid " + colors[1];
                         element.removeAttribute("onclick");
+                        element.src = "./img/s" + arten[elementFor(s, arten)-1] + "_2.png";
                         element = document.getElementById("b" + elementFor(b, raeume));
                         element.style.border = "3px solid " + colors[1];
                         element.removeAttribute("onclick");
+                        element.src = "./img/b" + raeume[elementFor(b, raeume)-1] + "_2.png";
+
+                        // Workaround: Statt Element mit Zahl/Symbol auf der Zelle des Bildes nach erfolgreicher zuordnung einzublenden lade einfach Bilder neu in die die Zahl/das Symbol reineditiert wurde. Kann in der Zukunft verschönert werden.
+
                     } else {
                         document.getElementById("s" + elementFor(s, arten)).style.border = "3px solid " + colors[2];
                         document.getElementById("b" + elementFor(b, raeume)).style.border = "3px solid " + colors[2];
